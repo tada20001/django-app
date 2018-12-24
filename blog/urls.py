@@ -5,6 +5,9 @@ from . import views
 #router = DefaultRouter()
 #router.register(r'post', PostViewSet)
 
+app_name = 'blog'
+
+
 urlpatterns = [
     #path('', include(router.urls)),
     path('post/', views.PostList.as_view())
