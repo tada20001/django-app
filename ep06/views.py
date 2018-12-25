@@ -10,5 +10,8 @@ class PostViewSet(ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()  # 부모의 queryset을 호출
-        qs = qs.filter(title__icontains='team')
+        if self.request.user.is_authenticated:
+            qs = qs.filter(author=self.request.user)
+        else:
+            qs = qs.none() # empty result
         return qs
