@@ -9,8 +9,8 @@ print(router.urls)
 app_name = 'ep04'
 
 urlpatterns = [
-    path('post/', views.post_list),
-    path('post/<int:pk>/', views.post_detail),
+    #path('post/', views.post_list),
+    #path('post/<int:pk>/', views.post_detail),
 
     path('api/', include(router.urls)),  # /ep04/api/post
 ]
