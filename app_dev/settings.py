@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'blog',
     'ep03',
     'ep04',
+    'ep06',
 ]
 
 MIDDLEWARE = [
