@@ -7,5 +7,6 @@ urlpatterns = [
     path('ep03/', include('ep03.urls', namespace='ep03')),
     path('ep04/', include('ep04.urls', namespace='ep04')),
     path('ep06/', include('ep06.urls', namespace='ep06')),
+    path('ep08/', include('ep08.urls', namespace='ep08')),
 
 ]
