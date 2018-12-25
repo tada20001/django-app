@@ -3,12 +3,14 @@ from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from ep04.models import Post
 from ep04.serializers import PostSerializer
+from .pagination import PostPageNumberPagination
 
 
 
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    pagination_class = PostPageNumberPagination
     filter_backends = [SearchFilter]
     search_fields = ['title']
 
