@@ -8,5 +8,5 @@ urlpatterns = [
     path('ep04/', include('ep04.urls', namespace='ep04')),
     path('ep06/', include('ep06.urls', namespace='ep06')),
     path('ep08/', include('ep08.urls', namespace='ep08')),
-
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
