@@ -8,7 +8,7 @@ from .permissions import IsAuthorUpdateOrReadonly
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthorUpdateOrReadonly]
+    #permission_classes = [IsAuthorUpdateOrReadonly]
     # permission_classes = [
     #     IsAuthenticated, # AllowAny는 디폴트이므로 인증된 유저만 지정할 시 지정하지 않음
     # ]
