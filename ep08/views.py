@@ -1,10 +1,13 @@
 import time
+from rest_framework.response import Response
+from django.core.signals import request_started, request_finished
 from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from .models import Post
 from .serializers import PostSerializer
 from .permissions import IsAuthorUpdateOrReadonly
+
 
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
@@ -33,7 +36,7 @@ class PostViewSet(ModelViewSet):
         self.render_time = time.time() - render_start
 
         self.dispatch_time = time.time() - dispatch_start
-        self.api_view_time = self.dispatch_time - (self.render_time + self.serialize_time + self.db_time)
+        self.api_view_time = self.dispatch_time - (self.render_time + self.serializer_time + self.db_time)
 
         return response
 
@@ -50,3 +53,24 @@ class PostViewSet(ModelViewSet):
         self.serializer_time = time.time() - serializer_start
 
         return Response(data)
+
+
+def started_fn(sender, **kwargs):
+    global started
+    started = time.time()
+
+def finished_fn(sender, **kwargs):
+    request_response_time = (time.time() - started) - cbv.dispatch_time
+
+    total = cbv.db_time + cbv.serializer_time + cbv.api_view_time + cbv.render_time + request_response_time
+
+    print('total                                : {:.6f}s'.format(total))
+
+    print('Database Lookup    - db_time         : {:.6f}s, {:>4.1f}%'.format(cbv.db_time, 100*(cbv.db_time/total)))
+    print('Serialization      - serializer_time : {:.6f}s, {:>4.1f}%'.format(cbv.serializer_time, 100*(cbv.serializer_time/total)))
+    print('API View           - api_view_time   : {:.6f}s, {:>4.1f}%'.format(cbv.api_view_time, 100*(cbv.api_view_time/total)))
+    print('Response rendering - render_time     : {:.6f}s, {:>4.1f}%'.format(cbv.render_time, 100*(cbv.render_time/total)))
+    print('Django request/response              : {:.6f}s, {:>4.1f}%'.format(request_response_time, 100*(request_response_time/total)))
+
+request_started.connect(started_fn)    # 요청 처리 시작
+request_finished.connect(finished_fn)  # 요청 처리 끝
