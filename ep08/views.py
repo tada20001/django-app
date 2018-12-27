@@ -5,15 +5,29 @@ from django.core.cache import cache
 from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.negotiation import BaseContentNegotiation
+from rest_framework.renderers import JSONRenderer
 from .models import Post
 from .serializers import PostSerializer
 from .permissions import IsAuthorUpdateOrReadonly
+
+class IgnoreClientContentNegotiation(BaseContentNegotiation):
+    def select_parser(self, request, parsers):
+        "Select the first parser in the `.parser_classes` list."
+        return parsers[0]
+
+    def select_renderer(self, request, renderers, format_suffix):
+        "Select the first renderer in the `.renderer_classes` list."
+        return (renderers[0], renderers[0].media_type)
 
 
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    #permission_classes = [IsAuthorUpdateOrReadonly]
+    permission_classes = []  # settings에 지정 가능
+    authentication_classes = [] # settings에 지정 가능
+    render_classes = [JSONRenderer] # settings에 지정 가능
+    content_negotiation_class = IgnoreClientContentNegotiation
     # permission_classes = [
     #     IsAuthenticated, # AllowAny는 디폴트이므로 인증된 유저만 지정할 시 지정하지 않음
     # ]
