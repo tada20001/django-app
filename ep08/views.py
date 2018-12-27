@@ -1,7 +1,9 @@
 import time
+import json
 from rest_framework.response import Response
 from django.core.signals import request_started, request_finished
 from django.core.cache import cache
+from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
@@ -47,7 +49,7 @@ class PostViewSet(ModelViewSet):
         response = super().dispatch(request, *args, **kwargs)
 
         render_start = time.time()
-        response.render()
+        #response.render()
         self.render_time = time.time() - render_start
 
         self.dispatch_time = time.time() - dispatch_start
@@ -61,14 +63,14 @@ class PostViewSet(ModelViewSet):
         db_start = time.time()
         data = cache.get('post_list_cache') # 메모리에 저장해서 읽어들이기 위함
         if data is None:
-            data = self.queryset.values('author__username', 'message') # DB에서 직접 목록을 가져옴
+            data = list(self.queryset.values('author__username', 'message')) # DB에서 직접 목록을 가져옴
             cache.set('post_list_cache', data)  # cache 값이 없으면 DB에서 직접 가져와서 저장
 
         self.db_time = time.time() - db_start
 
         self.serializer_time = 0
 
-        return Response(data)
+        return HttpResponse(json.dumps(data), content_type='application/json; charset=utf8') # HttpResponse를 쓰게 되면 내부적으로 직렬화를 하고 렌더러가 동작하게 되나 json.dumps를 사용해서 직접 직렬화를 함
 
 
 def started_fn(sender, **kwargs):
