@@ -1,6 +1,7 @@
 import time
 from rest_framework.response import Response
 from django.core.signals import request_started, request_finished
+from django.core.cache import cache
 from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
@@ -44,12 +45,13 @@ class PostViewSet(ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         db_start = time.time()
-        #post_list = list(self.queryset)  # 현시점에서 즉시 DB fetch
-        data = self.queryset.values('author__username', 'message')
+        data = cache.get('post_list_cache') # 메모리에 저장해서 읽어들이기 위함
+        if data is None:
+            data = self.queryset.values('author__username', 'message') # DB에서 직접 목록을 가져옴
+            cache.set('post_list_cache', data)  # cache 값이 없으면 DB에서 직접 가져와서 저장
+
         self.db_time = time.time() - db_start
-        #serializer_start = time.time()
-        #serializer = self.get_serializer(self.queryset, many=True)
-        #data = serializer.data
+
         self.serializer_time = 0
 
         return Response(data)
