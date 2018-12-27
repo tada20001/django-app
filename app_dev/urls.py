@@ -1,4 +1,5 @@
 from django.contrib import admin
+from rest_framework.authtoken.views import obtain_auth_token
 from django.urls import path, include
 
 urlpatterns = [
@@ -11,5 +12,6 @@ urlpatterns = [
     path('api/', include('api.urls', namespace='api')),
 
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api-token-auth/', obtain_auth_token),
 
 ]
