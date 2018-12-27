@@ -38,11 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'blog',
     'ep03',
     'ep04',
     'ep06',
     'ep08',
+    'api',
 ]
 
 # django 웹페이지 미들웨어는 전부 끄기
